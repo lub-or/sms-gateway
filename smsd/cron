@@ -1,0 +1,10 @@
+#! /bin/bash
+#LOGFILE=/var/log/smstools/cron_`date +%H%M%S`.log
+
+x=60
+while [ ${x} -gt 0 ]
+do
+/usr/bin/php -q /home/lubo/cron/sms.php
+x=$((x-5))
+sleep 5
+done

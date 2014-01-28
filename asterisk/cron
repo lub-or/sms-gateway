@@ -1,0 +1,31 @@
+#! /bin/bash
+#LOGFILE=/var/log/smstools/cron_`date +%H%M%S`.log
+DIR=/home/lubo/cron/sms
+
+x=60
+while [ ${x} -gt 0 ]
+do
+    # Download SMS from www1 DB sms_queue
+    /usr/bin/php -q "$DIR/sms.php"
+
+    # Send SMS using asterisk
+    if [ ! -f /home/lubo/cron/sms/lock ]; then
+        EXISTS=0
+        for i in /home/lubo/cron/sms/outgoing/sms*; do test -f $i && EXISTS=1 && break; done
+        if [ $EXISTS -eq 1  ]; then
+            touch /home/lubo/cron/sms/lock
+            for f in /home/lubo/cron/sms/outgoing/sms*
+            do
+                echo "Sending SMS $f"
+                nc localhost 5038 < $f
+                mv $f /home/lubo/cron/sms/sent
+                x=$((x-10))
+                sleep 10
+            done
+            rm /home/lubo/cron/sms/lock
+        fi
+    fi
+
+x=$((x-5))
+sleep 5
+done
