@@ -2,6 +2,7 @@
 #LOGFILE=/var/log/smstools/cron_`date +%H%M%S`.log
 DIR=/home/lubo/cron/sms
 
+
 x=60
 while [ ${x} -gt 0 ]
 do
